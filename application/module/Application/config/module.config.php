@@ -20,6 +20,20 @@ return array(
                     ),
                 ),
             ),
+            'auth' => array(
+                'type'    => 'segment',
+                'options' => array(
+                    'route'    => '/auth[/:action]',
+                    'constraints' => array(
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                    ),
+                    'defaults' => array(
+                        'controller' => 'Application\Controller\Auth',
+                        'action'     => 'index',
+                    ),
+                ),
+            ),
+
             // The following is a route to simplify getting started creating
             // new controllers and actions without needing to create a new
             // module. Simply drop new controllers in, and you can access them
@@ -60,6 +74,9 @@ return array(
         'aliases' => array(
             'translator' => 'MvcTranslator',
         ),
+        'factories' => array(
+            'test' => 'Application\Services\AuthenticationAdapterFactory',
+        ),
     ),
     'translator' => array(
         'locale' => 'en_US',
@@ -73,7 +90,8 @@ return array(
     ),
     'controllers' => array(
         'invokables' => array(
-            'Application\Controller\Index' => 'Application\Controller\IndexController'
+            'Application\Controller\Index' => 'Application\Controller\IndexController',
+            'Application\Controller\Auth' => 'Application\Controller\AuthController',
         ),
     ),
     'view_manager' => array(
@@ -98,5 +116,15 @@ return array(
             'routes' => array(
             ),
         ),
+    ),
+    'auth_adapter' => array(
+        'config' => array(
+            'accept_schemes' => 'basic digest',
+            'realm'          => 'List Account',
+            'digest_domains' => '/index',
+            'nonce_timeout'  => 3600,
+        ),
+        'basic_file'  => __DIR__ . '/credentials/basic.txt',
+        'digest_file' => __DIR__ . '/credentials/digest.txt',
     ),
 );
