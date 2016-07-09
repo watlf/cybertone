@@ -6,13 +6,14 @@
  * Time: 17:34
  */
 
-namespace Services;
+namespace Application\Factory;
 
 
 use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
-use Zend\Authentication\Adapter\Http as HttpAdapter;
-use Zend\Authentication\Adapter\Http\FileResolver;
+use Zend\Authentication\Adapter\Digest as DigestAdapter;
+use Zend\Authentication\AuthenticationService;
+use Zend\Authentication\Storage\Session as Storage;
 
 class AuthenticationAdapterFactory implements FactoryInterface
 {
@@ -20,15 +21,14 @@ class AuthenticationAdapterFactory implements FactoryInterface
     {
         $config = $serviceLocator->get('Config');
         $authConfig = $config['auth_adapter'];
-        $authAdapter = new HttpAdapter($authConfig['config']);
-        $basicResolver = new FileResolver();
-        $digestResolver = new FileResolver();
 
-        $basicResolver->setFile($authConfig['basic_file']);
-        $digestResolver->setFile($authConfig['digest_file']);
-        $authAdapter->setBasicResolver($basicResolver);
-        $authAdapter->setDigestResolver($digestResolver);
+        $authAdapter = new DigestAdapter($authConfig['digest_file'], $authConfig['realm']);
+        $authService = new AuthenticationService();
+        $authStorage = new Storage();
 
-        return $authAdapter;
+        $authService->setAdapter($authAdapter);
+        $authService->setStorage($authStorage);
+
+        return $authService;
     }
 }

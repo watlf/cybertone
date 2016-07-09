@@ -19,6 +19,23 @@ class Module
         $eventManager        = $e->getApplication()->getEventManager();
         $moduleRouteListener = new ModuleRouteListener();
         $moduleRouteListener->attach($eventManager);
+
+        /**
+         * @var $authService \Zend\Authentication\AuthenticationService
+         */
+        $authService = $e->getApplication()->getServiceManager()->get('Factory\AuthenticationAdapter');
+
+        $eventManager->attach(MvcEvent::EVENT_DISPATCH, function(MvcEvent $e) use($authService) {
+            $routeMatch = $e->getRouteMatch();
+
+            if (!$authService->hasIdentity() && $routeMatch->getMatchedRouteName() !== 'auth') {
+                $response = $e->getResponse();
+                $url = $e->getRouter()->assemble(array(), array('name' => 'auth'));
+                $response->getHeaders()->addHeaderLine('Location', $url);
+                $response->setStatusCode(302);
+                return $response;
+            }
+        });
     }
 
     public function getConfig()

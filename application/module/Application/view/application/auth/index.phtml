@@ -1,1 +1,19 @@
-Action "index", controller "Auth", module "Application".
+<?php $form->setAttribute('action', $this->url()); ?>
+<?php if ($authErrorMessage): ?>
+    <div class="alert alert-warning">
+        <strong><?= $this->translate('Warning!'); ?></strong> <?= $authErrorMessage; ?>
+    </div>
+<?php endif; ?>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-6 col-md-4 col-md-offset-4">
+            <h1 class="text-center login-title"><?= $this->title; ?></h1>
+            <div class="account-wall">
+                <img class="profile-img" src="" alt="">
+                <?= $this->form()->openTag($form); ?>
+                <?= $this->formCollection($form); ?>
+                <?= $this->form()->closeTag(); ?>
+            </div>
+        </div>
+    </div>
+</div>

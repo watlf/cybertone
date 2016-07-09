@@ -8,8 +8,44 @@
 
 namespace Application\Form;
 
-
-class AuthForm
+class AuthForm extends AbstractExtendedForm
 {
+    public $formName = 'auth';
 
+    /**
+     * @return void
+     */
+    public function create()
+    {
+        $this->setAttributes(array(
+            'class' =>'form-signin',
+            'method' => 'post',
+        ));
+
+        $this->add(array(
+            'name' => 'name',
+            'attributes' => array(
+                'type' => 'text',
+                'autofocus' => true,
+                'class' => 'form-control',
+            )
+        ));
+
+        $this->add(array(
+            'name' => 'password',
+            'attributes' => array(
+                'type' => 'password',
+                'class' => 'form-control',
+            )
+        ));
+
+        $this->add(array(
+            'name' => 'submit',
+            'attributes' => array(
+                'type' => 'submit',
+                'class' => 'btn btn-lg btn-primary btn-block',
+                'value' => 'Sign In',
+            ),
+        ));
+    }
 }

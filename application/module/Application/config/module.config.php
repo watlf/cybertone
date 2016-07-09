@@ -75,7 +75,7 @@ return array(
             'translator' => 'MvcTranslator',
         ),
         'factories' => array(
-            'test' => 'Application\Services\AuthenticationAdapterFactory',
+            'Factory\AuthenticationAdapter' => 'Application\Factory\AuthenticationAdapterFactory',
         ),
     ),
     'translator' => array(
@@ -119,12 +119,14 @@ return array(
     ),
     'auth_adapter' => array(
         'config' => array(
-            'accept_schemes' => 'basic digest',
-            'realm'          => 'List Account',
-            'digest_domains' => '/index',
+            'accept_schemes' => 'basic',
+            'realm'          => null,
+            'digest_domains' => '/auth',
             'nonce_timeout'  => 3600,
         ),
-        'basic_file'  => __DIR__ . '/credentials/basic.txt',
+        'realm' => 'Account',
+        'user' => 'admin',
+        'password' => 'admin123',
         'digest_file' => __DIR__ . '/credentials/digest.txt',
     ),
 );

@@ -8,8 +8,18 @@
 
 namespace Application\Form;
 
+use Zend\Form\Form;
 
-class AbstractExtendedForm
+abstract class AbstractExtendedForm extends Form
 {
+    public $formName;
 
+    public function __construct()
+    {
+        parent::__construct($this->formName);
+
+        $this->create();
+    }
+
+    abstract function create();
 }
