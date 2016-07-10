@@ -2,12 +2,10 @@
 
 namespace Application\Controller;
 
-use Zend\Mvc\Controller\AbstractActionController;
-use Zend\View\Model\ViewModel;
 use Application\Form\AuthForm;
 use Application\Filter\AuthFilter;
 
-class AuthController extends AbstractActionController
+class AuthController extends AbstractExtendedController
 {
 
     /**
@@ -28,7 +26,7 @@ class AuthController extends AbstractActionController
         /**
          * @var $authService \Zend\Authentication\AuthenticationService
          */
-        $authService = $this->getServiceLocator()->get('Factory\AuthenticationAdapter');
+        $authService = $this->getAuthService();
 
         if ($authService->hasIdentity()) {
             $result = $this->redirect()->toRoute('home');
@@ -77,11 +75,11 @@ class AuthController extends AbstractActionController
         /**
          * @var $authService \Zend\Authentication\AuthenticationService
          */
-        $authService = $this->getServiceLocator()->get('Factory\AuthenticationAdapter');
+        $authService = $this->getAuthService();
 
         $authService->clearIdentity();
 
-        return $this->redirect()->toRoute('auth');
+        $this->redirect()->toRoute('auth');
     }
 
 }

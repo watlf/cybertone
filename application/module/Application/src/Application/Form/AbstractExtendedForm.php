@@ -21,5 +21,5 @@ abstract class AbstractExtendedForm extends Form
         $this->create();
     }
 
-    abstract function create();
+    abstract public function create();
 }

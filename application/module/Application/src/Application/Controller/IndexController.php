@@ -9,13 +9,34 @@
 
 namespace Application\Controller;
 
-use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 
-class IndexController extends AbstractActionController
+class IndexController extends AbstractExtendedController
 {
     public function indexAction()
     {
-        return new ViewModel();
+        $consumersRepository = $this->getConsumersRepository();
+
+        $groupsRepository = $this->getGroupsRepository();
+
+        return array(
+            'consumers' => $groupsRepository->getGroupsWithConsumers()
+        );
+    }
+
+    /**
+     * @return \Application\Model\Repository\Consumers
+     */
+    private function getConsumersRepository()
+    {
+        return $this->getEntityManager()->getRepository('Application\Model\Entity\Consumers');
+    }
+
+    /**
+     * @return \Application\Model\Repository\Groups
+     */
+    private function getGroupsRepository()
+    {
+        return $this->getEntityManager()->getRepository('Application\Model\Entity\Groups');
     }
 }
