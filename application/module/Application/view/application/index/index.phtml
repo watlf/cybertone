@@ -32,6 +32,7 @@
                     <th><?= $this->translate('Login'); ?></th>
                     <th><?= $this->translate('Email'); ?></th>
                     <th><?= $this->translate('Account Expired'); ?></th>
+                    <th><?= $this->translate('Group'); ?></th>
                 </tr>
             </thead>
             <?php foreach ($consumers as $user): ?>
@@ -41,6 +42,7 @@
                     <td><?= $user['login']; ?></td>
                     <td><?= $user['email']; ?></td>
                     <td><?= $user['accountExpired']->format('Y-m-d \ H:i'); ?></td>
+                    <td><?= $user['groupName'] ?: $this->translate('Group isn\'t set'); ?></td>
                 </tr>
             <?php endforeach; ?>
         </table>

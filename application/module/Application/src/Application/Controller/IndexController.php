@@ -16,23 +16,44 @@ class IndexController extends AbstractExtendedController
 {
     public function indexAction()
     {
-        $repository = $this->getConsumersRepository();
-
         $page = $this->params()->fromRoute('page', 1);
 
         $limit = PaginationHelper::PER_PAGE;
-        $offset = (0 === (int)$page) ? 0 : ($page - 1) * $limit;
+        $offset = $this->getOffset($page);
 
-        /**
-         * @var \Doctrine\ORM\Tools\Pagination\Paginator $dataUsers
-         */
-        $dataUsers = $repository->getConsumers($offset, $limit);
+        $dataUsers = $this->getConsumersRepository()->getConsumers($offset, $limit);
 
         return array(
             'page' => $page,
             'countUsers' => $dataUsers['count'],
             'consumers' => $dataUsers['listUsers'],
+            'groups' => $this->extractGroup($dataUsers['listUsers']),
         );
+    }
+
+    /**
+     * @param int $page
+     * @return int
+     */
+    private function getOffset($page)
+    {
+        return (0 === (int)$page) ? 0 : ($page - 1) * PaginationHelper::PER_PAGE;
+    }
+
+    /**
+     * @param array $listUsers
+     * @return array
+     */
+    private function extractGroup(array $listUsers)
+    {
+        $result = array();
+
+        foreach ($listUsers as $user) {
+            $result[$user['groupId']] = $user['groupName'];
+        }
+
+
+        return $result;
     }
 
     /**

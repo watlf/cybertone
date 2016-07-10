@@ -16,6 +16,16 @@ use Doctrine\ORM\Tools\Pagination\Paginator;
 class Consumers extends EntityRepository
 {
 
+    private $listSelect = array(
+        'consumers.login',
+        'consumers.id',
+        'consumers.email',
+        'consumers.accountExpired',
+        'consumers.avatarExtension',
+        'groups.id as groupId',
+        'groups.name as groupName',
+    );
+
     /**
      * @param int $offset
      * @param int $limit
@@ -24,20 +34,34 @@ class Consumers extends EntityRepository
     public function getConsumers($offset = 0, $limit = 10)
     {
         $qb = $this->_em->createQueryBuilder()
-            ->select('consumers')
+            ->select($this->listSelect)
             ->from('Application\Model\Entity\Consumers', 'consumers')
+            ->leftJoin(
+                'Application\Model\Entity\Groups',
+                'groups',
+                Join::WITH,
+                'groups.id = consumers.groupId'
+            )
             ->setMaxResults($limit)
             ->setFirstResult($offset);
 
-        $query = $qb->getQuery();
-
-        $pagination = new Paginator($query);
-
         $result = array(
-            'count' => $pagination->count(),
-            'listUsers' => $pagination->getQuery()->getArrayResult()
+            'count' => $this->getTotal(),
+            'listUsers' => $qb->getQuery()->getArrayResult()
         );
 
         return $result;
+    }
+
+    /**
+     * @return int
+     */
+    public function getTotal()
+    {
+        $qb = $this->_em->createQueryBuilder()
+            ->select('COUNT(c)')
+            ->from('Application\Model\Entity\Consumers', 'c');
+
+        return $qb->getQuery()->getSingleScalarResult();
     }
 }
