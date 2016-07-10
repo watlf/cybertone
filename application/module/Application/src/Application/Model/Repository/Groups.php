@@ -22,24 +22,23 @@ class Groups extends EntityRepository
         $result = array();
 
         $qb = $this->_em->createQueryBuilder()
-            ->select('consumers', 'groups')
-            ->from('Application\Model\Entity\Groups', 'groups')
+            ->select(['consumers', 'groups.id', 'groups.name'])
+            ->from('Application\Model\Entity\Consumers', 'consumers')
             ->leftJoin(
-                'Application\Model\Entity\Consumers',
-                'consumers',
+                'Application\Model\Entity\Groups',
+                'groups',
                 Join::WITH,
-                'groups.id = consumers.idGroup'
+                'groups.id = consumers.groupId'
             );
 
-        $groups = $qb->getQuery()->getArrayResult();
+        $data = $qb->getQuery()->getArrayResult();
 
 
-        foreach ($groups as $consumer) {
-            if (isset($consumer['name'])) {
-                $result['groups'][] = $consumer;
-            } else {
-                $result['customers'][] = $consumer;
-            }
+        foreach ($data as $values) {
+            $needle = current($values);
+            $needle['groupName'] = $values['name'];
+            $needle['groupId'] = $values['id'];
+            $result[(int)$values['id']][] = $needle;
         }
 
         return $result;

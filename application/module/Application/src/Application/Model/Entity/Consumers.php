@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Consumers
  *
- * @ORM\Table(name="consumers", uniqueConstraints={@ORM\UniqueConstraint(name="login", columns={"login"})}, indexes={@ORM\Index(name="id_group", columns={"id_group"})})
+ * @ORM\Table(name="consumers", uniqueConstraints={@ORM\UniqueConstraint(name="login", columns={"login", "email"})}, indexes={@ORM\Index(name="group_id", columns={"group_id"})})
  * @ORM\Entity(repositoryClass="Application\Model\Repository\Consumers")
  */
 class Consumers
@@ -61,26 +61,17 @@ class Consumers
      *
      * @ORM\ManyToOne(targetEntity="Application\Model\Entity\Groups")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="id_group", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="group_id", referencedColumnName="id")
      * })
      */
-    private $idGroup;
-
-    /**
-     * @var Groups|null
-     *
-     * @ORM\ManyToOne(targetEntity="Groups", inversedBy="groups", cascade={"persist"})
-     * @ORM\JoinColumn(name="id_group", referencedColumnName="id")
-     */
-    protected $groups;
+    private $groupId;
 
     /**
      * @param Groups $group
      */
     public function __construct(Groups $group)
     {
-        $this->groups = $group;
-        $this->idGroup = $group->getId();
+        $this->groupId = $group->getId();
     }
 
     /**
@@ -209,25 +200,25 @@ class Consumers
     }
 
     /**
-     * Set idGroup
+     * Set groupId
      *
-     * @param \Application\Model\Entity\Groups $idGroup
+     * @param Groups $group
      * @return Consumers
      */
-    public function setIdGroup(\Application\Model\Entity\Groups $idGroup = null)
+    public function setGroup(Groups $group = null)
     {
-        $this->idGroup = $idGroup;
+        $this->groupId = $group;
 
         return $this;
     }
 
     /**
-     * Get idGroup
+     * Get groupId
      *
      * @return \Application\Model\Entity\Groups 
      */
-    public function getIdGroup()
+    public function getGroup()
     {
-        return $this->idGroup;
+        return $this->groupId;
     }
 }

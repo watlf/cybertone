@@ -66,3 +66,26 @@ div.container a.brand {
 .account-wall {
     text-align: center;
 }
+
+.paging a {
+    display:inline-block;
+    padding:5px 10px;
+    border:1px solid #cccccc;
+    border-radius: 3px;
+    margin-right:5px;
+}
+
+.paging a:hover {
+    background-color:#428bca;
+    color:#ffffff;
+    text-decoration: none;
+}
+
+.paging {
+    text-align:center;
+}
+
+.selected-page {
+    background-color: lightgray;
+    text-decoration: none;
+}

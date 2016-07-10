@@ -32,7 +32,7 @@ class Groups
     /**
      * @var ArrayCollection
      *
-     * @ORM\OneToMany(targetEntity="Consumers", mappedBy="consumers")
+     * @ORM\OneToMany(targetEntity="Consumers", mappedBy="groups")
      */
     private $consumers;
 

@@ -9,18 +9,29 @@
 
 namespace Application\Controller;
 
+use Application\View\Helper\PaginationHelper;
 use Zend\View\Model\ViewModel;
 
 class IndexController extends AbstractExtendedController
 {
     public function indexAction()
     {
-        $consumersRepository = $this->getConsumersRepository();
+        $repository = $this->getConsumersRepository();
 
-        $groupsRepository = $this->getGroupsRepository();
+        $page = $this->params()->fromRoute('page', 1);
+
+        $limit = PaginationHelper::PER_PAGE;
+        $offset = (0 === (int)$page) ? 0 : ($page - 1) * $limit;
+
+        /**
+         * @var \Doctrine\ORM\Tools\Pagination\Paginator $dataUsers
+         */
+        $dataUsers = $repository->getConsumers($offset, $limit);
 
         return array(
-            'consumers' => $groupsRepository->getGroupsWithConsumers()
+            'page' => $page,
+            'countUsers' => $dataUsers['count'],
+            'consumers' => $dataUsers['listUsers'],
         );
     }
 

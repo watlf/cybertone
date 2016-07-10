@@ -47,6 +47,19 @@ return array(
                     ),
                 ),
             ),
+            'user-management' => array(
+                'type'    => 'Segment',
+                'options' => array(
+                    'route'    => '/users/[:action]/[page/:page]',
+                    'constraints' => array(
+                        'page' => '[0-9]*',
+                    ),
+                    'defaults' => array(
+                        'controller'    => 'Application\Controller\Index',
+                        'action'        => '[a-zA-Z][a-zA-Z0-9_-]*',
+                    ),
+                ),
+            ),
 
             // The following is a route to simplify getting started creating
             // new controllers and actions without needing to create a new
@@ -123,6 +136,11 @@ return array(
         'template_path_stack' => array(
             __DIR__ . '/../view',
         ),
+    ),
+    'view_helpers' => array(
+        'invokables'=> array(
+            'PaginationHelper' => 'Application\View\Helper\PaginationHelper'
+        )
     ),
     // Placeholder for console routes
     'console' => array(
