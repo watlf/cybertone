@@ -9,59 +9,66 @@
 namespace Application\Model\Repository;
 
 use Doctrine\ORM\EntityRepository;
-use Application\Model\Entity\Consumers as ConsumersEntity;
-use Doctrine\ORM\Query\Expr\Join;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 
 class Consumers extends EntityRepository
 {
-
-    private $listSelect = array(
-        'consumers.login',
-        'consumers.id',
-        'consumers.email',
-        'consumers.accountExpired',
-        'consumers.avatarExtension',
-        'groups.id as groupId',
-        'groups.name as groupName',
-    );
-
     /**
+     * @param array $filters
      * @param int $offset
      * @param int $limit
      * @return array
      */
-    public function getConsumers($offset = 0, $limit = 10)
+    public function getConsumers($filters = array(), $offset = 0, $limit = 10)
     {
         $qb = $this->_em->createQueryBuilder()
-            ->select($this->listSelect)
+            ->select('consumers')
             ->from('Application\Model\Entity\Consumers', 'consumers')
-            ->leftJoin(
-                'Application\Model\Entity\Groups',
-                'groups',
-                Join::WITH,
-                'groups.id = consumers.groupId'
-            )
             ->setMaxResults($limit)
             ->setFirstResult($offset);
 
+        if ($filters) {
+            $qb = $this->setFilters($qb, $filters);
+        }
+
+        $pagination = new Paginator($qb);
+
         $result = array(
-            'count' => $this->getTotal(),
-            'listUsers' => $qb->getQuery()->getArrayResult()
+            'count' => $pagination->count(),
+            'listUsers' => $pagination->getQuery()->getArrayResult()
         );
 
         return $result;
     }
 
     /**
-     * @return int
+     * @param QueryBuilder $qb
+     * @param array $filters
+     * @return QueryBuilder
      */
-    public function getTotal()
+    private function setFilters(QueryBuilder $qb, array $filters)
     {
-        $qb = $this->_em->createQueryBuilder()
-            ->select('COUNT(c)')
-            ->from('Application\Model\Entity\Consumers', 'c');
+        if (isset($filters['filterByGroupId']) && '' !== $filters['filterByGroupId']) {
+            switch ($filters['filterByGroupId']) {
+                case 0:
+                    $qb->where('consumers.groupId is NULL');
+                    break;
+                default:
+                    $qb->where('consumers.groupId = :groupId');
+                    $qb->setParameter('groupId', $filters['filterByGroupId']);
+            }
+        }
 
-        return $qb->getQuery()->getSingleScalarResult();
+        if (!empty($filters['accountExpired'])) {
+            $qb->where('consumers.accountExpired <= :accountExpired');
+            $qb->setParameter('accountExpired', $filters['accountExpired']);
+        }
+
+        if (!empty($filters['orderByField'])) {
+            $qb->orderBy('consumers.' . $filters['orderByField'], $filters['order']);
+        }
+
+        return $qb;
     }
 }

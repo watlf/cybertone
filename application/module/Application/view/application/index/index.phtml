@@ -1,3 +1,6 @@
+<?= $this->headLink()->prependStylesheet($this->basePath() . '/css/bootstrap-datepicker.min.css'); ?>
+<?= $this->headScript()->prependFile($this->basePath() . '/js/bootstrap-datepicker.js'); ?>
+<?= $this->headScript()->prependFile($this->basePath() . '/view/js/index.js'); ?>
 <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
     <div class="container">
         <div class="navbar-header">
@@ -19,20 +22,36 @@
     </div>
 </nav>
 <div class="paging">
-    <?= $this->paginationHelper($countUsers, $page, '/users/index/'); ?>
+    <?php if ($countUsers): ?>
+        <?= $this->paginationHelper($countUsers, $page, '/users/index/', $request); ?>
+    <?php endif; ?>
+</div>
+<div class="row">
+    <?= $this->form()->openTag($form); ?>
+        <?php foreach ($form as $element): ?>
+            <div class="form-group col-md-2" >
+                <label><?= $element->getLabel(); ?></label>
+                <?= $this->formElement($element); ?>
+                <?= $this->formElementErrors($element); ?>
+            </div>
+        <?php endforeach; ?>
+    <?= $this->form()->closeTag(); ?>
+    <div class="form-group col-md-2" >
+        <label>&nbsp;</label>
+        <a href="<?= $this->url('home'); ?>" class="form-control btn btn-default">
+            <?= $this->translate('Reset Filters'); ?>
+        </a>
+    </div>
 </div>
 <div class="container">
-    <h2><?= $this->translate('List Users'); ?></h2>
     <?php if ($consumers): ?>
         <table class="table table-bordered">
             <thead>
                 <tr>
                     <th><?= $this->translate('Avatar'); ?></th>
-                    <th><?= $this->translate('Id'); ?></th>
-                    <th><?= $this->translate('Login'); ?></th>
-                    <th><?= $this->translate('Email'); ?></th>
-                    <th><?= $this->translate('Account Expired'); ?></th>
-                    <th><?= $this->translate('Group'); ?></th>
+                    <?php foreach ($fields as $field): ?>
+                        <th><?= $field; ?></th>
+                    <?php endforeach; ?>
                 </tr>
             </thead>
             <?php foreach ($consumers as $user): ?>
@@ -42,12 +61,14 @@
                     <td><?= $user['login']; ?></td>
                     <td><?= $user['email']; ?></td>
                     <td><?= $user['accountExpired']->format('Y-m-d \ H:i'); ?></td>
-                    <td><?= $user['groupName'] ?: $this->translate('Group isn\'t set'); ?></td>
+                    <td><?= isset($groups[$user['groupId']]) ? $groups[$user['groupId']] : 'User without group'; ?></td>
                 </tr>
             <?php endforeach; ?>
         </table>
         <?php else: ?>
-        <p><?= $this->translate('List is empty'); ?></p>
+        <div class="row">
+            <h2 class="zf-green text-center"><?= $this->translate('List is empty'); ?></h2>
+        </div>
     <?php endif; ?>
 </div>
 

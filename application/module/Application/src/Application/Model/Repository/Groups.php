@@ -22,6 +22,14 @@ class Groups extends EntityRepository
             ->select('groups')
             ->from('Application\Model\Entity\Groups', 'groups');
 
-        return $qb->getQuery()->getArrayResult();
+        $result = array();
+
+        $resultQuery = $qb->getQuery()->getArrayResult();
+
+        foreach ($resultQuery as $group) {
+            $result[$group['id']] = $group['name'];
+        }
+
+        return $result;
     }
 }

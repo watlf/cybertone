@@ -59,6 +59,7 @@ class Consumers
     /**
      * @var \Application\Model\Entity\Groups
      *
+     * @ORM\Column(name="group_id", type="integer", nullable=true)
      * @ORM\ManyToOne(targetEntity="Application\Model\Entity\Groups")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="group_id", referencedColumnName="id")

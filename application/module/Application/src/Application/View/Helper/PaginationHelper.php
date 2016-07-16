@@ -18,18 +18,25 @@ class PaginationHelper extends AbstractHelper
      */
     private $page;
 
+    private  $queryString = '';
+
     const PER_PAGE = 10;
+
+    const DEFAULT_NUM_PAGE = 1;
 
     /**
      * @param int $countResults
      * @param int $pageNumber
      * @param string $baseUrl
+     * @param $query
      * @param int $resultsPerPage
      * @return string
      */
-    public function __invoke($countResults, $pageNumber, $baseUrl, $resultsPerPage = self::PER_PAGE)
+    public function __invoke($countResults, $pageNumber, $baseUrl, $query, $resultsPerPage = self::PER_PAGE)
     {
-        $this->page = $pageNumber;
+        $this->page = (int)$pageNumber;
+
+        $this->queryString = $query;
 
         $pages = ceil($countResults / $resultsPerPage);
 
@@ -49,8 +56,9 @@ class PaginationHelper extends AbstractHelper
             return $result;
         }
 
-        if ($this->page != 1) {
-            $result .= sprintf('<a href="%spage/1"><</a>', $baseUrl);
+        if (self::DEFAULT_NUM_PAGE !== $this->page) {
+            $numPage = $this->getNumPageWithQuery();
+            $result .= sprintf('<a href="%spage/%s"><</a>', $baseUrl, $numPage);
         }
 
         $pageCount = 1;
@@ -60,15 +68,32 @@ class PaginationHelper extends AbstractHelper
             if ($pageCount == $this->page) {
                 $selectedPage = 'class="selected-page"';
             }
-            $result .= sprintf('<a href="%spage/%d" %s>%d</a>', $baseUrl, $pageCount, $selectedPage, $pageCount);
+
+            $query = $this->getNumPageWithQuery($pageCount);
+
+            $result .= sprintf('<a href="%spage/%d" %s>%d</a>', $baseUrl, $query, $selectedPage, $pageCount);
             $pageCount++;
         }
 
         if ($this->page != $pages) {
-            $result .= sprintf('<a href="%spage/%d">></a>', $baseUrl, $pages);
+            $query = $this->getNumPageWithQuery($pages);
+            $result .= sprintf('<a href="%spage/%s">></a>', $baseUrl, $query);
         }
 
         return $result;
+    }
+
+    /**
+     * @param int $page
+     * @return string
+     */
+    private function getNumPageWithQuery($page = self::DEFAULT_NUM_PAGE)
+    {
+        if ($this->queryString) {
+            $page = $page . '?' . $this->queryString;
+        }
+
+        return $page;
     }
 }
 
