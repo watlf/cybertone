@@ -8,9 +8,11 @@
 
 namespace Application\Model\Repository;
 
+use Application\Model\Entity\Groups;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use Application\Model\Entity\Consumers as EntityConsumers;
 
 class Consumers extends EntityRepository
 {
@@ -40,6 +42,73 @@ class Consumers extends EntityRepository
         );
 
         return $result;
+    }
+
+    /**
+     * @param string $login
+     * @return array
+     */
+    public function getConsumerByLogin($login)
+    {
+        $db = $this->_em->createQueryBuilder()
+            ->select('consumers')
+            ->from('Application\Model\Entity\Consumers', 'consumers')
+            ->where('consumers.login = :login')
+            ->setMaxResults(1);
+
+        $db->setParameters(array(
+            'login' => $login
+        ));
+
+
+
+        return $db->getQuery()->getArrayResult();
+    }
+
+    /**
+     * @param string $email
+     * @return array
+     */
+    public function getConsumerByEmail($email)
+    {
+        $db = $this->_em->createQueryBuilder()
+            ->select('consumers')
+            ->from('Application\Model\Entity\Consumers', 'consumers')
+            ->where('consumers.email = :email')
+            ->setMaxResults(1);
+
+        $db->setParameters(array(
+            'email' => $email
+        ));
+
+        return $db->getQuery()->getArrayResult();
+    }
+
+    /**
+     * @param array $formData
+     * @return int
+     */
+    public function addConsumer(array $formData)
+    {
+        $group = null;
+
+        if ($formData['groupId']) {
+            $group = new Groups();
+        }
+
+        $consumers = new EntityConsumers($group);
+        
+        $consumers->setLogin($formData['login'])
+            ->setEmail($formData['email'])
+            ->setPassword($formData['password'])
+            ->setAccountExpired(new \DateTime($formData['accountExpired']))
+            ->setAvatarExtension($formData['extension']);
+
+        $this->_em->persist($consumers);
+
+        $this->_em->flush();
+
+        return $consumers->getId();
     }
 
     /**

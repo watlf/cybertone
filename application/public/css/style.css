@@ -55,11 +55,11 @@ div.container a.brand {
     width: 100%;
 }
 
-.form-signin ul {
+.form-group ul {
     list-style-type: none;
 }
 
-.form-signin li {
+.form-group li {
     color: red;
 }
 
@@ -84,6 +84,10 @@ div.container a.brand {
 .paging {
     text-align:center;
     min-height: 40px;
+}
+
+.empty {
+    height: 50px;
 }
 
 .selected-page {

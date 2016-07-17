@@ -68,11 +68,13 @@ class Consumers
     private $groupId;
 
     /**
-     * @param Groups $group
+     * @param Groups|null $group
      */
-    public function __construct(Groups $group)
+    public function __construct(Groups $group = null)
     {
-        $this->groupId = $group->getId();
+        if (!is_null($group)) {
+            $this->groupId = $group->getId();
+        }
     }
 
     /**

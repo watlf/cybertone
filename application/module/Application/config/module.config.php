@@ -61,6 +61,22 @@ return array(
                 ),
             ),
 
+            'user' => array(
+                'type' => 'segment',
+                'options' => array(
+                    'route'    => '/user[/:action][/:id]',
+                    'defaults' => array(
+                        '__NAMESPACE__' => 'Application\Controller',
+                        'controller'    => 'User',
+                        'action'        => 'index',
+                    ),
+                    'constraints' => [
+                        'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'action'     => '[a-zA-Z][a-zA-Z0-9_-]*',
+                    ]
+                ),
+            ),
+
             // The following is a route to simplify getting started creating
             // new controllers and actions without needing to create a new
             // module. Simply drop new controllers in, and you can access them
@@ -103,6 +119,7 @@ return array(
         ),
         'factories' => array(
             'Factory\AuthenticationAdapter' => 'Application\Factory\AuthenticationAdapterFactory',
+            'Zend\Db\Adapter\Adapter' => 'Zend\Db\Adapter\AdapterServiceFactory',
         ),
     ),
     'translator' => array(
@@ -119,6 +136,7 @@ return array(
         'invokables' => array(
             'Application\Controller\Index' => 'Application\Controller\IndexController',
             'Application\Controller\Auth' => 'Application\Controller\AuthController',
+            'Application\Controller\User' => 'Application\Controller\UserController',
         ),
     ),
     'view_manager' => array(

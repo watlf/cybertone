@@ -37,4 +37,19 @@ abstract class AbstractExtendedController extends AbstractActionController
         return $this->getServiceLocator()->get('Factory\AuthenticationAdapter');
     }
 
+    /**
+     * @return \Application\Model\Repository\Consumers
+     */
+    protected function getConsumersRepository()
+    {
+        return $this->getEntityManager()->getRepository('Application\Model\Entity\Consumers');
+    }
+
+    /**
+     * @return \Application\Model\Repository\Groups
+     */
+    protected function getGroupsRepository()
+    {
+        return $this->getEntityManager()->getRepository('Application\Model\Entity\Groups');
+    }
 }

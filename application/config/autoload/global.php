@@ -12,5 +12,31 @@
  */
 
 return array(
-    // ...
+//    'service_manager' => array(
+//        'factories' => array(
+//            'Zend\Db\Adapter\Adapter' => 'Zend\Db\Adapter\AdapterServiceFactory',
+//        ),
+//    ),
+    // db adapter config
+    'db' => array(
+        'driver'    => 'pdo',
+        'dsn'       => 'mysql:dbname=cybertone;host=127.0.0.1',
+        'username'  => 'root',
+        'password'  => '123456',
+    ),
+
+    'doctrine' => array(
+        'connection' => array(
+            'orm_default' => array(
+                'driverClass' => 'Doctrine\DBAL\Driver\PDOMySql\Driver',
+                'params' => array(
+                    'host'     => 'localhost',
+                    'port'     => '3306',
+                    'user'     => 'root',
+                    'password' => '123456',
+                    'dbname'   => 'cybertone',
+                )
+            )
+        )
+    ),
 );

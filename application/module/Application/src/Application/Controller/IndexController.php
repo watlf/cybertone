@@ -46,7 +46,7 @@ class IndexController extends AbstractExtendedController
         $request = $this->getRequest();
         $query = $request->getQuery();
 
-        if ($request->isGet()) {
+        if ($request->isGet() && $query->count()) {
             $filter = new SearchFilter();
 
             $form->setInputFilter($filter->getInputFilter());
@@ -100,21 +100,5 @@ class IndexController extends AbstractExtendedController
     private function getOffset($page)
     {
         return (0 === (int)$page) ? 0 : ($page - 1) * PaginationHelper::PER_PAGE;
-    }
-
-    /**
-     * @return \Application\Model\Repository\Consumers
-     */
-    private function getConsumersRepository()
-    {
-        return $this->getEntityManager()->getRepository('Application\Model\Entity\Consumers');
-    }
-
-    /**
-     * @return \Application\Model\Repository\Groups
-     */
-    private function getGroupsRepository()
-    {
-        return $this->getEntityManager()->getRepository('Application\Model\Entity\Groups');
     }
 }

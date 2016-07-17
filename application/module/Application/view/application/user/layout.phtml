@@ -1,0 +1,30 @@
+<?= $this->headLink()
+    ->prependStylesheet($this->basePath() . '/css/bootstrap-datepicker.min.css')
+    ->prependStylesheet($this->basePath() . '/view/css/user.css');
+?>
+<?= $this->headScript()
+    ->prependFile($this->basePath() . '/js/bootstrap-datepicker.js')
+    ->prependFile($this->basePath() . '/view/js/index.js');
+?>
+<?= $this->render('layout/menu.phtml'); ?>
+<?php if (isset($messages)): ?>
+    <div class="alert alert-success">
+        <strong>Success!</strong> <?= $messages[0]; ?>
+    </div>
+<?php endif; ?>
+<div class="manage-user">
+    <div>
+        <h1 class="text-center"><?= $this->translate($title); ?></h1>
+        <?= $this->form()->openTag($form); ?>
+        <?php foreach ($form as $element): ?>
+            <div class="form-group col-md-12" >
+                <label>
+                    <?= $element->getLabel(); ?>
+                </label>
+                <?= $this->formElement($element); ?>
+                <?= $this->formElementErrors($element); ?>
+            </div>
+        <?php endforeach; ?>
+        <?= $this->form()->closeTag(); ?>
+    </div>
+</div>
