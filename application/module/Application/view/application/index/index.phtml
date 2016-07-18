@@ -4,6 +4,11 @@
     ->prependFile($this->basePath() . '/view/js/index.js');
 ?>
 <?= $this->render('layout/menu.phtml'); ?>
+<?php if (!empty($messages)): ?>
+    <div class="alert alert-info">
+        <?= $messages[0]; ?>
+    </div>
+<?php endif; ?>
 <div class="paging">
     <?php if ($countUsers): ?>
         <?= $this->paginationHelper($countUsers, $page, '/users/index/', $request); ?>
@@ -41,7 +46,7 @@
             </thead>
             <?php foreach ($consumers as $user): ?>
                 <tr>
-                    <td><img src="<?= $user['avatarExtension']; ?>" alt="<?= $user['login']; ?>"></td>
+                    <td><img src="<?= $this->avatarPathHelper($user['id'], $user['avatarExtension']); ?>" alt="<?= $user['login']; ?>"></td>
                     <td><?= $user['id']; ?></td>
                     <td><?= $user['login']; ?></td>
                     <td><?= $user['email']; ?></td>

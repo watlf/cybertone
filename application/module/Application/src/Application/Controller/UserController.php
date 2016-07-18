@@ -14,6 +14,7 @@ use Application\Form\UserForm;
 use Zend\Filter\File\Rename;
 use Zend\Http\Request;
 use Zend\Crypt\Password\Bcrypt;
+use Zend\Validator\Db\NoRecordExists;
 use Zend\View\Model\ViewModel;
 
 class UserController extends AbstractExtendedController
@@ -24,8 +25,12 @@ class UserController extends AbstractExtendedController
 
         $messages = ($flashMessenger->hasMessages()) ? $flashMessenger->getMessages() : '';
 
+        $form = $this->getForm();
+
+        $form->setAttribute('action', 'user/add');
+
         return array(
-            'form' => $this->getForm(),
+            'form' => $form,
             'messages' => $messages
         );
     }
@@ -43,9 +48,26 @@ class UserController extends AbstractExtendedController
             $dbAdapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
             $dataForm = $this->getFormData($request);
 
-            $filter = new UserFilter($dbAdapter);
+            $filter = new UserFilter();
 
             $form->setInputFilter($filter->getInputFilter());
+
+            $form->getInputFilter()->get('login')->getValidatorChain()->addValidator(
+                new NoRecordExists(array(
+                    'table' => 'consumers',
+                    'field' => 'login',
+                    'adapter' => $dbAdapter
+                ))
+            );
+
+            $form->getInputFilter()->get('email')->getValidatorChain()->addValidator(
+                new NoRecordExists(array(
+                    'table' => 'consumers',
+                    'field' => 'email',
+                    'adapter' => $dbAdapter
+                ))
+            );
+
             $form->setData($dataForm);
 
             if ($form->isValid()) {
@@ -60,8 +82,11 @@ class UserController extends AbstractExtendedController
 
                 if (isset($upload['error']) && 0 === $upload['error']) {
                     $this->flashMessenger()->addMessage('User was successfully added');
-                    $this->redirect()->toRoute('user');
+                } else {
+                    $this->flashMessenger()->addMessage('Something went wrong, try again');
                 }
+
+                $this->redirect()->toRoute('user');
             }
         }
         
@@ -75,8 +100,78 @@ class UserController extends AbstractExtendedController
     public function editAction()
     {
         $id = $this->params('id');
-
+        $consumer = $this->getConsumersRepository()->findOneBy(array('id' => $id));
         $form = $this->getForm();
+
+        if (is_null($consumer)) {
+            $this->flashMessenger()->addMessage('User not found');
+            //$this->redirect()->toRoute('home');
+        } else {
+            $form->setData(array(
+                'login' => $consumer->getLogin(),
+                'email' => $consumer->getEmail(),
+                'accountExpired' => $consumer->getAccountExpired()->format('Y-m-d'),
+                'groupId' => $consumer->getGroup(),
+            ));
+        }
+
+        $request = $this->getRequest();
+
+        if ($request->isPost()) {
+            $dbAdapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
+            $dataForm = $this->getFormData($request);
+
+            $filter = new UserFilter($dbAdapter);
+
+            $form->setInputFilter($filter->getInputFilter());
+
+            $form->getInputFilter()->get('login')->getValidatorChain()->addValidator(
+                new NoRecordExists(array(
+                    'table' => 'consumers',
+                    'field' => 'login',
+                    'exclude' => array(
+                        'field' => 'id',
+                        'value' => $id
+                    ),
+                    'adapter' => $dbAdapter
+                ))
+            );
+
+            $form->getInputFilter()->get('email')->getValidatorChain()->addValidator(
+                new NoRecordExists(array(
+                    'table' => 'consumers',
+                    'field' => 'email',
+                    'exclude' => array(
+                        'field' => 'id',
+                        'value' => $id
+                    ),
+                    'adapter' => $dbAdapter
+                ))
+            );
+
+            $form->setData($dataForm);
+
+            if ($form->isValid()) {
+                $repository = $this->getConsumersRepository();
+
+                $dataForm['password'] = $this->getHash($dataForm['password']);
+                $dataForm['extension'] = $this->getExtension($dataForm['logo']);
+
+                $userId = $repository->editConsumer($dataForm, $id);
+
+                $upload = $this->saveConsumerAvatar($userId, $dataForm['extension'], $dataForm['logo']);
+
+                if (isset($upload['error']) && 0 === $upload['error']) {
+                    $this->flashMessenger()->addMessage('User was successfully updated');
+                } else {
+                    $this->flashMessenger()->addMessage('Something went wrong, try again');
+                }
+
+                $this->redirect()->toRoute('user');
+            }
+
+            $form->setData($dataForm);
+        }
 
         return array(
             'form' => $form

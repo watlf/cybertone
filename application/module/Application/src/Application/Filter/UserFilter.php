@@ -14,15 +14,6 @@ use Zend\InputFilter\InputFilterInterface;
 
 class UserFilter extends AbstractExtendedFilter
 {
-    private $adapter;
-
-    public function __construct(Adapter $adapter)
-    {
-        $this->adapter = $adapter;
-
-        parent::__construct();
-    }
-
     /**
      * Retrieve input filter
      *
@@ -45,14 +36,6 @@ class UserFilter extends AbstractExtendedFilter
                         'min' => 1,
                         'max' => 100,
                     ),
-                ),
-                array(
-                    'name'    => 'Db\NoRecordExists',
-                    'options' => array(
-                        'table' => 'consumers',
-                        'field' => 'login',
-                        'adapter' => $this->adapter
-                    ),
                 )
             ),
         ));
@@ -70,14 +53,6 @@ class UserFilter extends AbstractExtendedFilter
                         'encoding' => 'UTF-8',
                         'min' => 1,
                         'max' => 100,
-                    ),
-                ),
-                array(
-                    'name'    => 'Db\NoRecordExists',
-                    'options' => array(
-                        'table' => 'consumers',
-                        'field' => 'email',
-                        'adapter' => $this->adapter
                     ),
                 )
             )
@@ -100,7 +75,7 @@ class UserFilter extends AbstractExtendedFilter
 
         $this->inputFilter->add(array(
             'name' => 'logo',
-            'required' => true,
+            'required' => false,
             'validators' => array(
                 array(
                     'name' => 'File\Size',

@@ -45,27 +45,6 @@ class Consumers extends EntityRepository
     }
 
     /**
-     * @param string $login
-     * @return array
-     */
-    public function getConsumerByLogin($login)
-    {
-        $db = $this->_em->createQueryBuilder()
-            ->select('consumers')
-            ->from('Application\Model\Entity\Consumers', 'consumers')
-            ->where('consumers.login = :login')
-            ->setMaxResults(1);
-
-        $db->setParameters(array(
-            'login' => $login
-        ));
-
-
-
-        return $db->getQuery()->getArrayResult();
-    }
-
-    /**
      * @param string $email
      * @return array
      */
@@ -105,6 +84,35 @@ class Consumers extends EntityRepository
             ->setAvatarExtension($formData['extension']);
 
         $this->_em->persist($consumers);
+
+        $this->_em->flush();
+
+        return $consumers->getId();
+    }
+
+    /**
+     * @param array $formData
+     * @param int $id
+     * @return int
+     */
+    public function editConsumer(array $formData, $id)
+    {
+        $group = null;
+
+        if ($formData['groupId']) {
+            $group = new Groups();
+        }
+
+        $consumers = new EntityConsumers($group);
+
+        $consumers->setId($id)
+            ->setLogin($formData['login'])
+            ->setEmail($formData['email'])
+            ->setPassword($formData['password'])
+            ->setAccountExpired(new \DateTime($formData['accountExpired']))
+            ->setAvatarExtension($formData['extension']);
+
+        $this->_em->merge($consumers);
 
         $this->_em->flush();
 

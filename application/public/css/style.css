@@ -94,3 +94,8 @@ div.container a.brand {
     background-color: lightgray;
     text-decoration: none;
 }
+
+.container img {
+    width: 70px;
+    height: 50px;
+}

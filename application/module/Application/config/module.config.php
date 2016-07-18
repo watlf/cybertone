@@ -157,7 +157,8 @@ return array(
     ),
     'view_helpers' => array(
         'invokables'=> array(
-            'PaginationHelper' => 'Application\View\Helper\PaginationHelper'
+            'PaginationHelper' => 'Application\View\Helper\PaginationHelper',
+            'AvatarPathHelper' => 'Application\View\Helper\AvatarPathHelper',
         )
     ),
     // Placeholder for console routes

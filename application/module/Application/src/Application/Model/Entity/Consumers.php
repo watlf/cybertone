@@ -88,6 +88,19 @@ class Consumers
     }
 
     /**
+     * Get id
+     *
+     * @param $id
+     * @return Consumers
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
+    /**
      * Set login
      *
      * @param string $login

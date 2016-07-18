@@ -16,8 +16,7 @@ class UserForm extends AbstractExtendedForm
     {
         $this->setAttributes(array(
             'method' => 'post',
-            'enctype' => 'multipart/form-data',
-            'action' => '/user/add'
+            'enctype' => 'multipart/form-data'
         ));
 
         $this->add(array(

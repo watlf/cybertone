@@ -7,9 +7,9 @@
     ->prependFile($this->basePath() . '/view/js/index.js');
 ?>
 <?= $this->render('layout/menu.phtml'); ?>
-<?php if (isset($messages)): ?>
-    <div class="alert alert-success">
-        <strong>Success!</strong> <?= $messages[0]; ?>
+<?php if (!empty($messages)): ?>
+    <div class="alert alert-info">
+        <?= $messages[0]; ?>
     </div>
 <?php endif; ?>
 <div class="manage-user">

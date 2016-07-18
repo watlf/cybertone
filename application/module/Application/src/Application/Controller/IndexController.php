@@ -64,6 +64,9 @@ class IndexController extends AbstractExtendedController
 
         $dataUsers = $this->getConsumersRepository()->getConsumers($filters, $offset, $limit);
 
+        $flashMessenger = $this->flashMessenger();
+        $messages = ($flashMessenger->hasMessages()) ? $flashMessenger->getMessages() : '';
+
         return array(
             'page' => $page,
             'countUsers' => $dataUsers['count'],
@@ -71,7 +74,8 @@ class IndexController extends AbstractExtendedController
             'groups' => $groups,
             'fields' => $this->fields,
             'form' => $form,
-            'request' => $query->toString()
+            'request' => $query->toString(),
+            'messages' => $messages
         );
     }
 
