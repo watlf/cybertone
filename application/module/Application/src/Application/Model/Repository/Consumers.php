@@ -80,8 +80,11 @@ class Consumers extends EntityRepository
         $consumers->setLogin($formData['login'])
             ->setEmail($formData['email'])
             ->setPassword($formData['password'])
-            ->setAccountExpired(new \DateTime($formData['accountExpired']))
-            ->setAvatarExtension($formData['extension']);
+            ->setAccountExpired(new \DateTime($formData['accountExpired']));
+
+        if (isset($formData['extension'])) {
+            $consumers->setAvatarExtension($formData['extension']);
+        }
 
         $this->_em->persist($consumers);
 
@@ -109,14 +112,38 @@ class Consumers extends EntityRepository
             ->setLogin($formData['login'])
             ->setEmail($formData['email'])
             ->setPassword($formData['password'])
-            ->setAccountExpired(new \DateTime($formData['accountExpired']))
-            ->setAvatarExtension($formData['extension']);
+            ->setAccountExpired(new \DateTime($formData['accountExpired']));
+
+        if (isset($formData['extension'])) {
+            $consumers->setAvatarExtension($formData['extension']);
+        }
 
         $this->_em->merge($consumers);
 
         $this->_em->flush();
 
         return $consumers->getId();
+    }
+
+    /**
+     * @param $id
+     * @return bool
+     */
+    public function deleteConsumer($id)
+    {
+        $result = true;
+
+        try {
+            $user = $this->_em->getReference('Application\Model\Entity\Consumers', array('id' => $id));
+
+            $this->_em->remove($user);
+
+            $this->_em->flush();
+        } catch (\Exception $ex) {
+            $result = false;
+        }
+
+        return$result;
     }
 
     /**

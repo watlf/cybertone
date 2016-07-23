@@ -52,7 +52,7 @@ class Consumers
     /**
      * @var string
      *
-     * @ORM\Column(name="avatar_extension", type="string", length=4, nullable=false)
+     * @ORM\Column(name="avatar_extension", type="string", length=4, nullable=true)
      */
     private $avatarExtension;
 
@@ -195,10 +195,10 @@ class Consumers
     /**
      * Set avatarExtension
      *
-     * @param string $avatarExtension
+     * @param string|null $avatarExtension
      * @return Consumers
      */
-    public function setAvatarExtension($avatarExtension)
+    public function setAvatarExtension($avatarExtension = null)
     {
         $this->avatarExtension = $avatarExtension;
 

@@ -45,42 +45,31 @@ class UserController extends AbstractExtendedController
         $request = $this->getRequest();
 
         if ($request->isPost()) {
-            $dbAdapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
             $dataForm = $this->getFormData($request);
 
+            /**
+             * @var UserFilter $filter
+             */
             $filter = new UserFilter();
-
             $form->setInputFilter($filter->getInputFilter());
 
-            $form->getInputFilter()->get('login')->getValidatorChain()->addValidator(
-                new NoRecordExists(array(
-                    'table' => 'consumers',
-                    'field' => 'login',
-                    'adapter' => $dbAdapter
-                ))
-            );
-
-            $form->getInputFilter()->get('email')->getValidatorChain()->addValidator(
-                new NoRecordExists(array(
-                    'table' => 'consumers',
-                    'field' => 'email',
-                    'adapter' => $dbAdapter
-                ))
-            );
+            $form = $this->addValidatorRecord($form);
 
             $form->setData($dataForm);
 
             if ($form->isValid()) {
-                $repository = $this->getConsumersRepository();
-
                 $dataForm['password'] = $this->getHash($dataForm['password']);
-                $dataForm['extension'] = $this->getExtension($dataForm['logo']);
 
-                $userId = $repository->addConsumer($dataForm);
+                if (!empty($dataForm['logo'])) {
+                    $dataForm['extension'] = $this->getExtension($dataForm['logo']);
+                }
 
-                $upload = $this->saveConsumerAvatar($userId, $dataForm['extension'], $dataForm['logo']);
+                $userId = $this->getConsumersRepository()->addConsumer($dataForm);
 
-                if (isset($upload['error']) && 0 === $upload['error']) {
+                if ($userId) {
+                    if (isset($dataForm['extension'])) {
+                        $this->saveConsumerAvatar($userId, $dataForm['extension'], $dataForm['logo']);
+                    }
                     $this->flashMessenger()->addMessage('User was successfully added');
                 } else {
                     $this->flashMessenger()->addMessage('Something went wrong, try again');
@@ -89,23 +78,24 @@ class UserController extends AbstractExtendedController
                 $this->redirect()->toRoute('user');
             }
         }
-        
-        $result = array(
+
+        return array(
             'form' => $form
         );
-
-        return $result;
     }
 
     public function editAction()
     {
         $id = $this->params('id');
         $consumer = $this->getConsumersRepository()->findOneBy(array('id' => $id));
+
+        /**
+         * @var UserForm $form
+         */
         $form = $this->getForm();
 
         if (is_null($consumer)) {
             $this->flashMessenger()->addMessage('User not found');
-            //$this->redirect()->toRoute('home');
         } else {
             $form->setData(array(
                 'login' => $consumer->getLogin(),
@@ -121,53 +111,42 @@ class UserController extends AbstractExtendedController
             $dbAdapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
             $dataForm = $this->getFormData($request);
 
+            /**
+             * @var UserFilter $filter
+             */
             $filter = new UserFilter($dbAdapter);
 
             $form->setInputFilter($filter->getInputFilter());
 
-            $form->getInputFilter()->get('login')->getValidatorChain()->addValidator(
-                new NoRecordExists(array(
-                    'table' => 'consumers',
-                    'field' => 'login',
-                    'exclude' => array(
-                        'field' => 'id',
-                        'value' => $id
-                    ),
-                    'adapter' => $dbAdapter
-                ))
+            $exclude = array(
+                'exclude' => array(
+                    'field' => 'id',
+                    'value' => $id
+                )
             );
 
-            $form->getInputFilter()->get('email')->getValidatorChain()->addValidator(
-                new NoRecordExists(array(
-                    'table' => 'consumers',
-                    'field' => 'email',
-                    'exclude' => array(
-                        'field' => 'id',
-                        'value' => $id
-                    ),
-                    'adapter' => $dbAdapter
-                ))
-            );
+            $form = $this->addValidatorRecord($form, $exclude);
 
             $form->setData($dataForm);
 
             if ($form->isValid()) {
-                $repository = $this->getConsumersRepository();
-
                 $dataForm['password'] = $this->getHash($dataForm['password']);
-                $dataForm['extension'] = $this->getExtension($dataForm['logo']);
+                if (!empty($dataForm['logo'])) {
+                    $dataForm['extension'] = $this->getExtension($dataForm['logo']);
+                }
 
-                $userId = $repository->editConsumer($dataForm, $id);
+                $userId = $this->getConsumersRepository()->editConsumer($dataForm, $id);
 
-                $upload = $this->saveConsumerAvatar($userId, $dataForm['extension'], $dataForm['logo']);
-
-                if (isset($upload['error']) && 0 === $upload['error']) {
+                if ($userId) {
+                    if (isset($dataForm['extension'])) {
+                        $this->saveConsumerAvatar($userId, $dataForm['extension'], $dataForm['logo']);
+                    }
                     $this->flashMessenger()->addMessage('User was successfully updated');
                 } else {
                     $this->flashMessenger()->addMessage('Something went wrong, try again');
                 }
 
-                $this->redirect()->toRoute('user');
+                $this->redirect()->toRoute('home');
             }
 
             $form->setData($dataForm);
@@ -176,6 +155,51 @@ class UserController extends AbstractExtendedController
         return array(
             'form' => $form
         );
+    }
+
+    public function deleteAction()
+    {
+        $result = $this->getConsumersRepository()->deleteConsumer(
+            $this->params('id')
+        );
+
+        if ($result) {
+            $this->flashMessenger()->addMessage('User was successfully deleted');
+        } else {
+            $this->flashMessenger()->addMessage('Something went wrong, try again');
+        }
+
+        $this->redirect()->toRoute('home');
+    }
+
+    /**
+     * @param UserForm $form
+     * @param array $exclude
+     * @return UserForm
+     */
+    private function addValidatorRecord(UserForm $form, $exclude = array())
+    {
+        $dbAdapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
+
+        $options = array(
+            'table' => 'consumers',
+            'field' => 'login',
+            'adapter' => $dbAdapter
+        );
+
+        $options = $exclude ? $options + $exclude : $options;
+
+        $form->getInputFilter()->get('login')->getValidatorChain()->addValidator(
+            new NoRecordExists($options)
+        );
+
+        $options['field'] = 'email';
+
+        $form->getInputFilter()->get('email')->getValidatorChain()->addValidator(
+            new NoRecordExists($options)
+        );
+
+        return $form;
     }
 
     /**
@@ -187,11 +211,28 @@ class UserController extends AbstractExtendedController
      */
     private function saveConsumerAvatar($userId, $extension, array $fileInfo)
     {
+        $avatar = $this->getConsumerAvatarById($userId);
+
+        if ($avatar) {
+            array_map('unlink', $avatar);
+        }
+
         $filter = new Rename(array(
             "target"    => sprintf("%s/uploads/consumers/avatar/%d.%s", APP_PUBLIC, $userId, $extension)
         ));
         
         return $filter->filter($fileInfo);
+    }
+
+    /**
+     * @param $userId
+     * @return array
+     */
+    private function getConsumerAvatarById($userId)
+    {
+        $fileName = sprintf("%s/uploads/consumers/avatar/%d.*", APP_PUBLIC, $userId);
+
+        return glob($fileName);
     }
 
     /**
