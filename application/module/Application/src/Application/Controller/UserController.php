@@ -277,7 +277,7 @@ class UserController extends AbstractExtendedController
     {
         $form = new UserForm();
 
-        $groups = $this->getGroupsRepository()->getGroups();
+        $groups = $this->getGroupsRepository()->getAllGroups();
 
         $form->get('groupId')->setOptions(array(
             'value_options' => array_merge(array('Select'), $groups)

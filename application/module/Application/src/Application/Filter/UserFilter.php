@@ -8,8 +8,6 @@
 
 namespace Application\Filter;
 
-
-use Zend\Db\Adapter\Adapter;
 use Zend\InputFilter\InputFilterInterface;
 
 class UserFilter extends AbstractExtendedFilter

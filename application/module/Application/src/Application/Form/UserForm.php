@@ -12,7 +12,7 @@ namespace Application\Form;
 class UserForm extends AbstractExtendedForm
 {
 
-    public function create()
+    protected function create()
     {
         $this->setAttributes(array(
             'method' => 'post',

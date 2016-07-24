@@ -15,10 +15,10 @@ class AuthForm extends AbstractExtendedForm
     /**
      * @return void
      */
-    public function create()
+    protected function create()
     {
         $this->setAttributes(array(
-            'class' =>'form-signin',
+            'class' =>'form-signin form-group',
             'method' => 'post',
         ));
 

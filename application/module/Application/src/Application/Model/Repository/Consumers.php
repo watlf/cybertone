@@ -9,6 +9,7 @@
 namespace Application\Model\Repository;
 
 use Application\Model\Entity\Groups;
+use Application\View\Helper\PaginationHelper;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
@@ -22,7 +23,7 @@ class Consumers extends EntityRepository
      * @param int $limit
      * @return array
      */
-    public function getConsumers($filters = array(), $offset = 0, $limit = 10)
+    public function getConsumers($filters = array(), $offset = 0, $limit = PaginationHelper::PER_PAGE)
     {
         $qb = $this->_em->createQueryBuilder()
             ->select('consumers')

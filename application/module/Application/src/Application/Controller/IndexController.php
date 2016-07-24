@@ -9,8 +9,8 @@
 
 namespace Application\Controller;
 
-use Application\Filter\SearchFilter;
-use Application\Form\SearchForm;
+use Application\Filter\SearchUserFilter;
+use Application\Form\SearchUserForm;
 use Application\View\Helper\PaginationHelper;
 use Zend\Http\Request;
 use Zend\Validator\InArray;
@@ -31,9 +31,9 @@ class IndexController extends AbstractExtendedController
         $page = $this->params()->fromRoute('page', 1);
 
         $limit = PaginationHelper::PER_PAGE;
-        $offset = $this->getOffset($page);
-        $groups = $this->getGroupsRepository()->getGroups();
-        $form = new SearchForm();
+        $offset = $this->getOffset($page, $limit);
+        $groups = $this->getGroupsRepository()->getAllGroups();
+        $form = new SearchUserForm();
 
         $form->get('fields')->setOptions(array(
             'value_options' => array_merge($form->get('fields')->getOption('value_options'), $this->fields))
@@ -47,7 +47,7 @@ class IndexController extends AbstractExtendedController
         $query = $request->getQuery();
 
         if ($request->isGet() && $query->count()) {
-            $filter = new SearchFilter();
+            $filter = new SearchUserFilter();
 
             $form->setInputFilter($filter->getInputFilter());
 
@@ -95,14 +95,5 @@ class IndexController extends AbstractExtendedController
         }
 
         return $result;
-    }
-
-    /**
-     * @param int $page
-     * @return int
-     */
-    private function getOffset($page)
-    {
-        return (0 === (int)$page) ? 0 : ($page - 1) * PaginationHelper::PER_PAGE;
     }
 }

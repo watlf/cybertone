@@ -8,7 +8,7 @@
 
 namespace Application\Form;
 
-class SearchForm extends AbstractExtendedForm
+class SearchUserForm extends AbstractExtendedForm
 {
     public $formName = 'filter';
 
@@ -27,7 +27,7 @@ class SearchForm extends AbstractExtendedForm
         '' => 'Select'
     );
 
-    public function create()
+    protected function create()
     {
         $this->add(array(
             'type' => 'Zend\Form\Element\Select',

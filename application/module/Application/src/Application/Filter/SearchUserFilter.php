@@ -10,7 +10,7 @@ namespace Application\Filter;
 
 use Zend\InputFilter\InputFilterInterface;
 
-class SearchFilter extends AbstractExtendedFilter
+class SearchUserFilter extends AbstractExtendedFilter
 {
 
     /**

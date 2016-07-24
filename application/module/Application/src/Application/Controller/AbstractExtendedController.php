@@ -8,6 +8,7 @@
 
 namespace Application\Controller;
 
+use Application\View\Helper\PaginationHelper;
 use Zend\Mvc\Controller\AbstractActionController;
 use Doctrine\ORM\EntityManager;
 
@@ -51,5 +52,15 @@ abstract class AbstractExtendedController extends AbstractActionController
     protected function getGroupsRepository()
     {
         return $this->getEntityManager()->getRepository('Application\Model\Entity\Groups');
+    }
+
+    /**
+     * @param int $page
+     * @param int $limit
+     * @return int
+     */
+    protected function getOffset($page, $limit)
+    {
+        return (0 === (int)$page) ? 0 : ($page - 1) * $limit;
     }
 }

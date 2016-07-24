@@ -76,6 +76,21 @@ return array(
                     ]
                 ),
             ),
+            'group' => array(
+                'type' => 'segment',
+                'options' => array(
+                    'route'    => '/group[/:action][/:id]',
+                    'defaults' => array(
+                        '__NAMESPACE__' => 'Application\Controller',
+                        'controller'    => 'Group',
+                        'action'        => 'index',
+                    ),
+                    'constraints' => [
+                        'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'action'     => '[a-zA-Z][a-zA-Z0-9_-]*',
+                    ]
+                ),
+            ),
 
             // The following is a route to simplify getting started creating
             // new controllers and actions without needing to create a new
@@ -137,6 +152,7 @@ return array(
             'Application\Controller\Index' => 'Application\Controller\IndexController',
             'Application\Controller\Auth' => 'Application\Controller\AuthController',
             'Application\Controller\User' => 'Application\Controller\UserController',
+            'Application\Controller\Group' => 'Application\Controller\GroupController',
         ),
     ),
     'view_manager' => array(
