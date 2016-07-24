@@ -5,6 +5,11 @@
         <?= $this->paginationHelper($countGroups, $page, '/group/index/', $request); ?>
     <?php endif; ?>
 </div>
+<?php if (!empty($messages)): ?>
+    <div class="alert alert-info">
+        <?= $messages[0]; ?>
+    </div>
+<?php endif; ?>
 <?php if ($groups): ?>
     <div class="row group-filter">
         <div class="col-lg-12">

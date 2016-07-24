@@ -1,0 +1,23 @@
+<?= $this->headLink()->prependStylesheet($this->basePath() . '/view/css/group.css'); ?>
+<?= $this->render('layout/menu.phtml'); ?>
+<?php if (!empty($messages)): ?>
+    <div class="alert alert-info">
+        <?= $messages[0]; ?>
+    </div>
+<?php endif; ?>
+<div class="manage-group">
+    <div>
+        <h1 class="text-center"><?= $this->translate($title); ?></h1>
+        <?= $this->form()->openTag($form); ?>
+        <?php foreach ($form as $element): ?>
+            <div class="form-group col-md-12" >
+                <label>
+                    <?= $element->getLabel(); ?>
+                </label>
+                <?= $this->formElement($element); ?>
+                <?= $this->formElementErrors($element); ?>
+            </div>
+        <?php endforeach; ?>
+        <?= $this->form()->closeTag(); ?>
+    </div>
+</div>

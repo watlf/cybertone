@@ -144,7 +144,7 @@ class Consumers extends EntityRepository
             $result = false;
         }
 
-        return$result;
+        return $result;
     }
 
     /**

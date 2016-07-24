@@ -63,4 +63,73 @@ class Groups extends EntityRepository
 
         return $result;
     }
+
+    /**
+     * @param array $formData
+     * @return int
+     */
+    public function addGroup(array $formData)
+    {
+        try {
+            $group = new GroupsEntity();
+
+            $group->setName($formData['name']);
+
+            $this->_em->persist($group);
+
+            $this->_em->flush();
+            $result = $group->getId();
+        } catch (\InvalidArgumentException $e) {
+            $result = 0;
+        }
+
+
+        return $result;
+    }
+
+    /**
+     * @param array $formData
+     * @param int $id
+     * @return int
+     */
+    public function editGroup(array $formData, $id)
+    {
+        try {
+            $group = new GroupsEntity();
+
+            $group->setId($id);
+            $group->setName($formData['name']);
+
+            $this->_em->merge($group);
+
+            $this->_em->flush();
+            $result = $group->getId();
+        } catch (\InvalidArgumentException $ex) {
+            $result = 0;
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param $id
+     * @return bool
+     * @throws \Doctrine\ORM\ORMException
+     */
+    public function deleteGroup($id)
+    {
+        $result = true;
+
+        try {
+            $user = $this->_em->getReference(GroupsEntity::class, ['id' => $id]);
+
+            $this->_em->remove($user);
+
+            $this->_em->flush();
+        } catch (\InvalidArgumentException $ex) {
+            $result = false;
+        }
+
+        return $result;
+    }
 }

@@ -8,7 +8,7 @@
 
 namespace Application\Controller;
 
-use Application\View\Helper\PaginationHelper;
+use Zend\Db\Adapter\Adapter;
 use Zend\Mvc\Controller\AbstractActionController;
 use Doctrine\ORM\EntityManager;
 
@@ -18,6 +18,11 @@ abstract class AbstractExtendedController extends AbstractActionController
      * @var EntityManager
      */
     protected $em;
+
+    /**
+     * @var Adapter
+     */
+    protected $dbAdapter;
 
     /**
      * @return array|EntityManager|object
@@ -52,6 +57,17 @@ abstract class AbstractExtendedController extends AbstractActionController
     protected function getGroupsRepository()
     {
         return $this->getEntityManager()->getRepository('Application\Model\Entity\Groups');
+    }
+
+    /**
+     * @return Adapter
+     */
+    protected function getDbAdapter()
+    {
+        if (null === $this->dbAdapter) {
+            $this->dbAdapter = $this->getServiceLocator()->get('Zend\Db\Adapter\Adapter');
+        }
+        return $this->dbAdapter;
     }
 
     /**

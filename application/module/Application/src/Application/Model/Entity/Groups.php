@@ -66,6 +66,19 @@ class Groups
     }
 
     /**
+     * Set id
+     *
+     * @param int $id
+     * @return Groups
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
+    /**
      * Get name
      *
      * @return string 
