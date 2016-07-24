@@ -40,7 +40,13 @@ class PaginationHelper extends AbstractHelper
 
         $pages = ceil($countResults / $resultsPerPage);
 
-        return $this->createPager($pages, $baseUrl);
+        $result = '';
+
+        if (1 !== (int)$pages) {
+            $result = $this->createPager($pages, $baseUrl);
+        }
+
+        return $result;
     }
 
     /**
@@ -52,12 +58,9 @@ class PaginationHelper extends AbstractHelper
     {
         $result = '';
 
-        if (1 === $pages) {
-            return $result;
-        }
-
         if (self::DEFAULT_NUM_PAGE !== $this->page) {
-            $numPage = $this->getNumPageWithQuery();
+            $page = $this->page - 1;
+            $numPage = $this->getNumPageWithQuery($page);
             $result .= sprintf('<a href="%spage/%s"><</a>', $baseUrl, $numPage);
         }
 
@@ -76,7 +79,8 @@ class PaginationHelper extends AbstractHelper
         }
 
         if ($this->page != $pages) {
-            $query = $this->getNumPageWithQuery($pages);
+            $page = $this->page + 1;
+            $query = $this->getNumPageWithQuery($page);
             $result .= sprintf('<a href="%spage/%s">></a>', $baseUrl, $query);
         }
 
