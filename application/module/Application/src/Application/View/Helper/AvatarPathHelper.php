@@ -13,6 +13,8 @@ use Zend\View\Helper\AbstractHelper;
 
 class AvatarPathHelper extends AbstractHelper
 {
+    const DEFAULT_IMG_LOGO = 'zf2-logo.png';
+
     /**
      * @param int $userId
      * @param string $extension
@@ -20,6 +22,24 @@ class AvatarPathHelper extends AbstractHelper
      */
     public function __invoke($userId, $extension)
     {
-        return sprintf('/uploads/consumers/avatar/%d.%s', $userId, $extension);
+        $image = $this->getImagePath($userId, $extension);
+
+        if (file_exists($image)) {
+            $result  = str_replace(APP_PUBLIC, '', $image);
+        } else {
+            $result = sprintf('/img/%s', self::DEFAULT_IMG_LOGO);
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param int $userId
+     * @param string $extension
+     * @return string
+     */
+    private function getImagePath($userId, $extension)
+    {
+        return sprintf('%s/uploads/consumers/avatar/%d.%s', APP_PUBLIC, $userId, $extension);
     }
 }
