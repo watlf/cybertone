@@ -8,9 +8,10 @@
 
 namespace Application\Model\Repository;
 
-use Application\Model\Entity\Groups;
+use Application\Model\Entity\Groups as EntityGroups;
 use Application\View\Helper\PaginationHelper;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Query\QueryException;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Application\Model\Entity\Consumers as EntityConsumers;
@@ -25,22 +26,26 @@ class Consumers extends EntityRepository
      */
     public function getConsumers($filters = array(), $offset = 0, $limit = PaginationHelper::PER_PAGE)
     {
-        $qb = $this->_em->createQueryBuilder()
-            ->select('consumers')
-            ->from('Application\Model\Entity\Consumers', 'consumers')
-            ->setMaxResults($limit)
-            ->setFirstResult($offset);
+        try {
+            $qb = $this->_em->createQueryBuilder()
+                ->select('consumers')
+                ->from('Application\Model\Entity\Consumers', 'consumers')
+                ->setMaxResults($limit)
+                ->setFirstResult($offset);
 
-        if ($filters) {
-            $qb = $this->setFilters($qb, $filters);
+            if ($filters) {
+                $qb = $this->setFilters($qb, $filters);
+            }
+
+            $pagination = new Paginator($qb);
+
+            $result = array(
+                'count' => $pagination->count(),
+                'listUsers' => $pagination->getQuery()->getArrayResult()
+            );
+        } catch (QueryException $ex) {
+            $result = array();
         }
-
-        $pagination = new Paginator($qb);
-
-        $result = array(
-            'count' => $pagination->count(),
-            'listUsers' => $pagination->getQuery()->getArrayResult()
-        );
 
         return $result;
     }
@@ -73,7 +78,7 @@ class Consumers extends EntityRepository
         $group = null;
 
         if ($formData['groupId']) {
-            $group = new Groups();
+            $group = new EntityGroups();
         }
 
         $consumers = new EntityConsumers($group);
@@ -104,7 +109,7 @@ class Consumers extends EntityRepository
         $group = null;
 
         if ($formData['groupId']) {
-            $group = new Groups();
+            $group = new EntityGroups();
         }
 
         $consumers = new EntityConsumers($group);

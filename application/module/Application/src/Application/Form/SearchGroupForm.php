@@ -17,7 +17,7 @@ class SearchGroupForm extends AbstractExtendedForm
             'type' => 'Zend\Form\Element\Select',
             'name' => 'fields',
             'options' => array(
-                'label' => 'Filter by column',
+                'label' => 'Order by column',
             ),
             'attributes' => array(
                 'class' => 'form-control'
